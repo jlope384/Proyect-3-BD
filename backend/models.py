@@ -14,7 +14,7 @@ class RolUsuario(BaseModel):
 class Ciudad(BaseModel):
     id: Optional[int] = None
     nombre: str
-    departamento: str
+    pais: str
 
 class Lugar(BaseModel):
     id: Optional[int] = None
