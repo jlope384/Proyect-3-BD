@@ -1,0 +1,18 @@
+# Ignorar dependencias instaladas localmente
+node_modules
+
+# Ignorar resultados de build previos
+build
+dist
+
+# Ignorar logs y archivos locales
+npm-debug.log*
+yarn-error.log*
+
+# Ignorar archivos de configuración de Docker
+Dockerfile*
+.dockerignore
+
+# Ignorar control de versiones
+.git
+.gitignore
