@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuarios</title>
+    <script>
+        async function fetchUsuarios() {
+            try {
+                const response = await fetch('http://localhost:8000/usuarios');
+                if (!response.ok) {
+                    throw new Error('Error fetching usuarios');
+                }
+                const usuarios = await response.json();
+                const usuariosList = document.getElementById('usuarios-list');
+                usuariosList.innerHTML = '';
+                usuarios.forEach(usuario => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = JSON.stringify(usuario);
+                    usuariosList.appendChild(listItem);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchUsuarios);
+    </script>
+</head>
+<body>
+    <h1>Lista de Usuarios</h1>
+    <ul id="usuarios-list">
+        <!-- Usuarios will be populated here -->
+    </ul>
+</body>
+</html>
