@@ -117,3 +117,33 @@ body {
 .page-container {
   padding: 20px;
 }
+
+/* Estilos para reportes */
+.reporte-container {
+  padding: 20px;
+}
+
+.visualizacion {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+  .visualizacion {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* reportes.css */
+.tabla-reporte {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-reporte th, 
+.tabla-reporte td {
+  padding: 12px;
+  border: 1px solid #ddd;
+}
