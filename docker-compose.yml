@@ -9,8 +9,8 @@ services:
       - "5432:5432"
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Javi2004
-      POSTGRES_DB: prueba
+      POSTGRES_PASSWORD: prueba
+      POSTGRES_DB: Javi2004
     volumes:
       - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
@@ -28,8 +28,8 @@ services:
       DB_HOST: db
       DB_PORT: 5432
       DB_USER: postgres
-      DB_PASSWORD: Javi2004
-      DB_NAME: prueba
+      DB_PASSWORD: prueba
+      DB_NAME: Javi2004
     networks:
       - eventos_net
 
