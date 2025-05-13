@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes import usuario, asistente, evento, entrada, artista, evento_patrocinador, evento_recurso, evento_artista, patrocinador, registro_asistencia, recurso, rol_usuario, calificacion_evento, lugar, ciudad, tipo_entrada, medio_pago, categoria_evento, tipo_evento, tema_evento
+from routes.dashboard import router as dashboard_router
 
 app = FastAPI()
-
+app.include_router(dashboard_router, prefix="/api")
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
