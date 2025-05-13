@@ -52,3 +52,5 @@ const FormularioAsistente = ({ asistenteExistente, onSave, onCancel }) => {
     </form>
   );
 };
+
+export default FormularioAsistente;

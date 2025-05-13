@@ -58,3 +58,5 @@ const Asistentes = () => {
     </div>
   );
 };
+
+export default Asistentes;

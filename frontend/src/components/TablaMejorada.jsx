@@ -41,3 +41,5 @@ const TablaMejorada = ({ datos, columnas, onEditar }) => {
     </div>
   );
 };
+
+export default TablaMejorada;
