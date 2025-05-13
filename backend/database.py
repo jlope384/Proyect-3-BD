@@ -7,6 +7,6 @@ def get_connection():
         host="localhost",
         database="eventos_db",
         user="postgres",
-        password="",  
+        password="Javi2004",  
         port="5432"
     )
