@@ -9,8 +9,8 @@ services:
       - "5432:5432"
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Javi2004
-      POSTGRES_DB: prueba
+      POSTGRES_PASSWORD: prueba
+      POSTGRES_DB: Javi2004
     volumes:
       - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
@@ -28,10 +28,22 @@ services:
       DB_HOST: db
       DB_PORT: 5432
       DB_USER: postgres
-      DB_PASSWORD: Javi2004
-      DB_NAME: prueba
+      DB_PASSWORD: prueba
+      DB_NAME: Javi2004
+    networks:
+      - eventos_net
+
+  frontend:
+    build: ./frontend
+    container_name: frontend_eventos
+    restart: always
+    ports:
+      - "3000:80"  # Servido por nginx en el Dockerfile frontend
+    depends_on:
+      - api
     networks:
       - eventos_net
 
 networks:
   eventos_net:
+
