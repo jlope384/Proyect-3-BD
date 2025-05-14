@@ -4,34 +4,48 @@ services:
   db:
     image: postgres:15
     container_name: postgres_eventos
-    restart: always
-    ports:
-      - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: prueba
       POSTGRES_DB: Javi2004
+    ports:
+      - "5432:5432"
     volumes:
       - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - eventos_net
+    healthcheck:
+      test: ["CMD-SHELL", "pq_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   api:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: api_eventos
-    restart: always
     ports:
       - "8000:8000"
-    depends_on:
-      - db
     environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_USER: postgres
-      DB_PASSWORD: prueba
-      DB_NAME: Javi2004
-    networks:
-      - eventos_net
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=Javi2004
+      - DB_USER=postgres
+      - DB_PASSWORD=prueba
+    depends_on:
+      - db:
+        condition: service_healthy
 
-networks:
-  eventos_net:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend_app
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      - api
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules

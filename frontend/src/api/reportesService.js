@@ -21,3 +21,12 @@ export const getEventosPorCategoria = (filtros) => {
 export const getAsistenciaPorCiudad = (filtros) => {
   return axios.get(`${API_URL}/asistencia-por-ciudad`, { params: filtros });
 };
+
+export const getTiposArtista = () => {
+  return axios.get(`${API_URL}/tipos-artista`);
+};
+
+export const getCiudades = () => axios.get('http://localhost:8000/api/ciudades');
+export const getCategorias = () => axios.get('http://localhost:8000/api/categoria-evento');
+export const getTiposEntrada = () => axios.get('http://localhost:8000/api/tipo-entrada');
+export const getMediosPago = () => axios.get('http://localhost:8000/api/medio-pago');

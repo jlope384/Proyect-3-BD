@@ -1,7 +1,22 @@
-// frontend/src/pages/Dashboard.jsx
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../index.css';
+
+const StatCard = ({ title, value, unit = '', isLoading = false }) => (
+  <div className={`stat-card ${isLoading ? 'loading' : ''}`}>
+    <h3 className="stat-title">{title}</h3>
+    <div className="stat-value">
+      {!isLoading ? (
+        <>
+          {value}
+          {unit && <span className="unit">{unit}</span>}
+        </>
+      ) : (
+        <div className="loading-shimmer"></div>
+      )}
+    </div>
+  </div>
+);
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -9,40 +24,144 @@ const Dashboard = () => {
     totalAsistentes: 0,
     promedioAsistencia: 0,
     calificacionPromedio: 0,
-    totalRecaudado: 0,
+    totalRecaudado: 0
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [lastUpdated, setLastUpdated] = useState(null);
+
+  const fetchDashboardStats = async (cancelToken) => {
+    try {
+      const { data } = await axios.get('http://localhost:8000/api/dashboard', {
+        cancelToken,
+        timeout: 8000,
+        validateStatus: (status) => status < 500
+      });
+
+      if (!data || data.status !== 'success') {
+        throw new Error(
+          data?.detail?.message || 
+          data?.message || 
+          'Estructura de respuesta inválida'
+        );
+      }
+
+      if (!data.data) {
+        throw new Error('Datos estadísticos no disponibles');
+      }
+
+      setStats({
+        totalEventos: data.data.totalEventos || 0,
+        totalAsistentes: data.data.totalAsistentes || 0,
+        promedioAsistencia: data.data.promedioAsistencia || 0,
+        calificacionPromedio: data.data.calificacionPromedio || 0,
+        totalRecaudado: data.data.totalRecaudado || 0
+      });
+
+      setLastUpdated(new Date());
+      setError(null);
+    } catch (err) {
+      if (!axios.isCancel(err)) {
+        setError(err.message || 'Error al cargar estadísticas');
+        console.error('Error en dashboard:', {
+          error: err,
+          response: err.response?.data
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const res = await axios.get('http://localhost:8000/api/dashboard');
-        setStats(res.data);
-      } catch (error) {
-        console.error('Error al cargar el dashboard:', error);
-      }
+    const source = axios.CancelToken.source();
+    
+    fetchDashboardStats(source.token);
+
+    // Auto-refresh cada 30 segundos
+    const intervalId = setInterval(() => {
+      fetchDashboardStats(source.token);
+    }, 30000);
+
+    return () => {
+      source.cancel('Componente desmontado');
+      clearInterval(intervalId);
     };
-    fetchStats();
   }, []);
 
+  const handleRetry = () => {
+    setLoading(true);
+    setError(null);
+    fetchDashboardStats(axios.CancelToken.source().token);
+  };
+
+  if (error) {
+    return (
+      <div className="dashboard-error">
+        <div className="error-content">
+          <h2>Error en el Dashboard</h2>
+          <p>{error}</p>
+          <button 
+            onClick={handleRetry}
+            className="retry-button"
+            disabled={loading}
+          >
+            {loading ? 'Cargando...' : 'Reintentar'}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div style={{ padding: '20px' }}>
-      <h1 style={{ fontSize: '24px', marginBottom: '20px' }}>Resumen General</h1>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
-        <Card title="Eventos realizados" value={stats.totalEventos} />
-        <Card title="Total asistentes" value={stats.totalAsistentes} />
-        <Card title="Prom. asistencia por evento" value={stats.promedioAsistencia.toFixed(2)} />
-        <Card title="Calificación promedio" value={stats.calificacionPromedio.toFixed(1)} />
-        <Card title="Total recaudado (Q)" value={`Q${stats.totalRecaudado.toFixed(2)}`} />
+    <div className="dashboard-container">
+      <header className="dashboard-header">
+        <h1>Panel de Control</h1>
+        {lastUpdated && (
+          <p className="last-updated">
+            Última actualización: {lastUpdated.toLocaleTimeString()}
+          </p>
+        )}
+      </header>
+
+      <div className="stats-grid">
+        <StatCard
+          title="Total de Eventos"
+          value={stats.totalEventos.toLocaleString()}
+          isLoading={loading}
+        />
+        
+        <StatCard
+          title="Asistentes Únicos"
+          value={stats.totalAsistentes.toLocaleString()}
+          isLoading={loading}
+        />
+        
+        <StatCard
+          title="Promedio Asistencia"
+          value={stats.promedioAsistencia.toFixed(2)}
+          unit="personas/evento"
+          isLoading={loading}
+        />
+        
+        <StatCard
+          title="Calificación Promedio"
+          value={stats.calificacionPromedio.toFixed(1)}
+          unit="/5"
+          isLoading={loading}
+        />
+        
+        <StatCard
+          title="Total Recaudado"
+          value={stats.totalRecaudado.toLocaleString('en-US', {
+            style: 'currency',
+            currency: 'GTQ'
+          })}
+          isLoading={loading}
+        />
       </div>
     </div>
   );
 };
-
-const Card = ({ title, value }) => (
-  <div className="card">
-    <h2 style={{ color: '#666', fontSize: '14px', marginBottom: '8px' }}>{title}</h2>
-    <p style={{ fontSize: '24px', fontWeight: 'bold' }}>{value}</p>
-  </div>
-);
 
 export default Dashboard;

@@ -4,11 +4,11 @@ from routes import usuario, asistente, evento, entrada, artista, evento_patrocin
 from routes.dashboard import router as dashboard_router
 
 app = FastAPI()
-app.include_router(dashboard_router, prefix="/api")
-# Add CORS middleware
+
+# Configuración CORS mejorada
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Replace "*" with specific origins if needed
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],  # Especifica los orígenes del frontend
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -16,13 +16,14 @@ app.add_middleware(
 
 @app.get("/")
 def ping():
-    return {"ping": "pong!"}
+    return {"message": "API operativa"}
 
+# Rutas de la API
 app.include_router(artista.router)
 app.include_router(asistente.router)
 app.include_router(calificacion_evento.router) 
 app.include_router(entrada.router)
-app.include_router(evento.router)
+app.include_router(evento.router, prefix="/api")
 app.include_router(evento_patrocinador.router)
 app.include_router(evento_recurso.router)
 app.include_router(evento_artista.router)
@@ -38,3 +39,5 @@ app.include_router(tipo_evento.router)
 app.include_router(tema_evento.router)
 app.include_router(tipo_entrada.router)
 app.include_router(medio_pago.router)
+app.include_router(dashboard_router, prefix="/api")
+app.include_router(artista.router, prefix="/api")

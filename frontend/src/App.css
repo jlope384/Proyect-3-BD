@@ -1,14 +1,10 @@
-/* Si usas Tailwind, asegúrate de tenerlo configurado en tu proyecto */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* App.css actualizado sin Tailwind */
 
-/* Estilos adicionales personalizados */
+/* Estilos personalizados */
 .bg-custom-card {
   background-color: #ffffff;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-
 
 .filtros-container {
   padding: 20px;
